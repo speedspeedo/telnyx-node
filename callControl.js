@@ -4,6 +4,7 @@ const OpenAI = require('openai');
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 const router = (module.exports = express.Router());
 const db = require("./db");
+const { RunStepsPage } = require("openai/resources/beta/threads/runs/steps");
 
 const outboundCallController = async (req, res) => {
   res.sendStatus(200); // Play nice and respond to webhook
@@ -50,6 +51,7 @@ const handleInboundHangup = (call, event) => {
 };
 
 const inboundCallController = async (req, res) => {
+  console.log("START!");
   res.sendStatus(200); // Play nice and respond to webhook
   const event = req.body.data;
   console.log(event)
@@ -108,3 +110,7 @@ const inboundCallController = async (req, res) => {
 router.route("/outbound").post(outboundCallController);
 
 router.route("/inbound").post(inboundCallController);
+
+router.route("/test").get((req, res) => {
+  res.send("Test");
+});
