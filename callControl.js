@@ -1,6 +1,7 @@
 const express = require("express");
 const telnyx = require("telnyx")(process.env.TELNYX_API_KEY);
-const openai = require('openai')(process.env.OPENAI_API_KEY);
+const OpenAI = require('openai');
+const openai = new OpenAI(process.env.OPENAI_API_KEY);
 const router = (module.exports = express.Router());
 const db = require("./db");
 
