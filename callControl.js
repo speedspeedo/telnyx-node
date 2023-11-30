@@ -69,7 +69,7 @@ const inboundCallController = async (req, res) => {
     case "call_answered":
       // Generate the bot's response using OpenAI
       // Step : Begin transcription
-      await tenlyx.startTranscription(call.id, {
+      await call.transcription_start({
         language: "en",
         transcriptionEngine: "B",
         transcriptionTracks: "inbound",
