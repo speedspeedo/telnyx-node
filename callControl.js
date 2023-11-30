@@ -87,6 +87,7 @@ const inboundCallController = async (req, res) => {
         voice: "female",
         language: "en-US",
       });
+      break;
     case "call_hangup":
       handleInboundHangup(call, event);
       break;
