@@ -92,7 +92,7 @@ const inboundCallController = async (req, res) => {
       // const response = await generateResponse(userInput);
 
       break;
-    case "speak_ended":
+    case "transcription":
       console.log("****************************");
       // Speak the response back to the caller
       if (index === 1) {
