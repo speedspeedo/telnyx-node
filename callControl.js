@@ -67,7 +67,14 @@ const inboundCallController = async (req, res) => {
       await call.answer();
       break;
     case "call_answered":
-      // Generate the bot's response using OpenAI
+      // Generate the bot's response using call.speak
+      await call.speak({
+        payload: "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
+        voice: "female",
+        language: "en-US",
+      });
+
+
       // Step : Begin transcription
       await call.transcription_start({
         language: "en",
@@ -83,7 +90,7 @@ const inboundCallController = async (req, res) => {
       console.log("transcription");
       // Speak the response back to the caller
       await call.speak({
-        payload: "Hello, I am a YODAN. How can I help you?",
+        payload: "Okay, I can certainly get someone to help you with that. May I have your name, please?",
         voice: "female",
         language: "en-US",
       });
