@@ -97,6 +97,7 @@ const inboundCallController = async (req, res) => {
       // Speak the response back to the caller
       if (index === 1) {
         const name = getName(event.payload.transcription_data.transcript ? event.payload.transcription_data.transcript : "");
+        console.log(name, event.payload.transcription_data.transcript);
         await call.speak({
           payload: bot_answers[index].replaceAll("#NAME", name),
           voice: "female",
