@@ -92,8 +92,8 @@ const inboundCallController = async (req, res) => {
       // const response = await generateResponse(userInput);
 
       break;
-    case "transcription":
-      console.log("transcription");
+    case "speak_ended":
+      console.log("****************************");
       // Speak the response back to the caller
       if (index === 1) {
         const name = getName(event.payload.transcription_data.transcript ? event.payload.transcription_data.transcript : "");
