@@ -77,15 +77,16 @@ const inboundCallController = async (req, res) => {
       // const userInput = await call.transcription();
       // const response = await generateResponse(userInput);
 
-      // Speak the response back to the caller
-      await call.speak({
-        payload: response,
-        voice: "female",
-        language: "en-US",
-      });
+      
       break;
     case "call_transcription":
       console.log("transcription");
+      // Speak the response back to the caller
+      await call.speak({
+        payload: "Hello, I am a YODAN. How can I help you?",
+        voice: "female",
+        language: "en-US",
+      });
     case "call_hangup":
       handleInboundHangup(call, event);
       break;
