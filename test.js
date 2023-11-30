@@ -28,12 +28,20 @@ async function createCall() {
 async function generateResponse(userInput) {
   const completions = await openai.completions.create({
     model: "text-davinci-003",
-    prompt: `Tell me the user's name with one word from the following user's response: ${userInput}`,
-    max_tokens: 50,
+    prompt: `Tell me the user's name with one word from the following user's response : ${userInput}`,
+    max_tokens: 10,
   });
-  console.log(completions.choices[0].text.trim());
+  let inputString = completions.choices[0].text;
+
+  // Split the string by newline and filter out empty strings
+  let wordsAfterNewline = inputString.split('\n').filter(Boolean);
+
+  // Get the last word after the last newline
+  let lastName = wordsAfterNewline.pop();
+
+  console.log(lastName);
 }
 
 
 // Call the async function
-generateResponse("I'm Jake Miller");
+generateResponse(" jake");
