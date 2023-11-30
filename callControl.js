@@ -54,7 +54,7 @@ const inboundCallController = async (req, res) => {
   console.log("START!");
   res.sendStatus(200); // Play nice and respond to webhook
   const event = req.body.data;
-  console.log(event)
+  console.log(req.body);
   const callIds = {
     call_control_id: event.payload.call_control_id,
     call_session_id: event.payload.call_session_id,
