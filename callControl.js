@@ -62,10 +62,10 @@ const inboundCallController = async (req, res) => {
   };
   const call = new telnyx.Call(callIds);
   switch (event.event_type) {
-    case "call.initiated":
+    case "call_initiated":
       await call.answer();
       break;
-    case "call.answered":
+    case "call_answered":
       // Start recording when the call is answered
       await call.record_start({ format: "mp3" });
       res.sendStatus(200);
@@ -97,7 +97,7 @@ const inboundCallController = async (req, res) => {
 
       res.sendStatus(200);
       break;
-    case "call.hangup":
+    case "call_hangup":
       handleInboundHangup(call, event);
       break;
     default:
