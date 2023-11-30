@@ -95,7 +95,7 @@ const inboundCallController = async (req, res) => {
     case "transcription":
       console.log("****************************");
       // Speak the response back to the caller
-      if (index === 1) {
+      if (index % 2 === 1) {
         const name = getName(event.payload.transcription_data.transcript ? event.payload.transcription_data.transcript : "");
         console.log(name, event.payload.transcription_data.transcript);
         await call.speak({
