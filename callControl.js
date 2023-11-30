@@ -49,6 +49,13 @@ const handleInboundHangup = (call, event) => {
   db.saveCall(event);
 };
 
+const bot_answers = [
+  "Okay, I can certainly get someone to help you with that. May I have your name, please?",
+  "Thank you, #NAME. Please allow me a few moments to get someone who can assist you, please hold.",
+];
+
+const index = 0;
+
 const inboundCallController = async (req, res) => {
   console.log("START!");
   res.sendStatus(200); // Send HTTP 200 OK to Telnyx immediately
@@ -69,11 +76,11 @@ const inboundCallController = async (req, res) => {
     case "call_answered":
       // Generate the bot's response using call.speak
       await call.speak({
-        payload: "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
+        payload:
+          "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
         voice: "female",
         language: "en-US",
       });
-
 
       // Step : Begin transcription
       await call.transcription_start({
@@ -84,16 +91,26 @@ const inboundCallController = async (req, res) => {
       // const userInput = await call.transcription();
       // const response = await generateResponse(userInput);
 
-      
       break;
     case "transcription":
       console.log("transcription");
       // Speak the response back to the caller
-      await call.speak({
-        payload: "Okay, I can certainly get someone to help you with that. May I have your name, please?",
-        voice: "female",
-        language: "en-US",
-      });
+      if (index === 1) {
+        const name = getName(event.payload.transcription_data.transcript ? event.payload.transcription_data.transcript : "");
+        await call.speak({
+          payload: bot_answers[index].replaceAll("#NAME", name),
+          voice: "female",
+          language: "en-US",
+        });
+      } else {
+        await call.speak({
+          payload: bot_answers[index],
+          voice: "female",
+          language: "en-US",
+        });
+      }
+      
+      index++;
       break;
     case "call_hangup":
       handleInboundHangup(call, event);
@@ -106,14 +123,11 @@ const inboundCallController = async (req, res) => {
 };
 
 // Function to generate the bot's response using OpenAI
-async function generateResponse(userInput) {
-  const prompt = `User: ${userInput}\nBot:`;
+async function getName(userInput) {
   const completions = await openai.completions.create({
-    engine: "text-davinci-002",
-    prompt,
+    model: "text-davinci-003",
+    prompt: `Tell me the user's name with one word from the following user's response: ${userInput}`,
     max_tokens: 50,
-    n: 1,
-    stop: "\n",
   });
   return completions.choices[0].text.trim();
 }
