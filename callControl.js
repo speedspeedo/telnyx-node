@@ -66,36 +66,12 @@ const inboundCallController = async (req, res) => {
       await call.answer();
       break;
     case "call_answered":
-      // Start recording when the call is answered
-      await call.record_start({ format: "mp3" });
-      res.sendStatus(200);
-      break;
-
-    case "recording.saved":
-      // Download the recorded message
-      const recordingURL = event.payload.recording_urls.mp3;
-      const audioResponse = await axios.get(recordingURL, {
-        responseType: "arraybuffer",
-      });
-
-      // Use the audio file with your speech-to-text service here to get the transcription
-
-      // Send the transcription to OpenAI to get a response
-      const transcription = "Transcribed Text Here"; // Replace with actual transcription
-      const gptResponse = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: transcription,
-        max_tokens: 150,
-      });
-
       // Speak the OpenAI-generated response back to the caller
       await call.speak({
-        payload: "Hi!, How are you, Susano?",
+        payload: "Hi!, How are you, Susano? Welcome to YODAN.",
         voice: "female",
         language: "en-US",
       });
-
-      res.sendStatus(200);
       break;
     case "call_hangup":
       handleInboundHangup(call, event);
