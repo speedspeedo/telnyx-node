@@ -1,6 +1,6 @@
 const express = require("express");
 const telnyx = require("telnyx")(process.env.TELNYX_API_KEY);
-const OpenAI = require('openai');
+const OpenAI = require("openai");
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 const router = (module.exports = express.Router());
 const db = require("./db");
@@ -53,6 +53,8 @@ const inboundCallController = async (req, res) => {
   console.log("START!");
   res.sendStatus(200); // Send HTTP 200 OK to Telnyx immediately
   const event = req.body;
+  console.log(event.event_type);
+  console.log("_______________________________________________");
   console.log(req.body);
   const callIds = {
     call_control_id: event.payload.call_control_id,
@@ -66,9 +68,15 @@ const inboundCallController = async (req, res) => {
       break;
     case "call_answered":
       // Generate the bot's response using OpenAI
-      const userInput = await call.transcription();
-      const response = await generateResponse(userInput);
-      
+      // Step : Begin transcription
+      await tenlyx.startTranscription(call.id, {
+        language: "en",
+        transcriptionEngine: "B",
+        transcriptionTracks: "inbound",
+      });
+      // const userInput = await call.transcription();
+      // const response = await generateResponse(userInput);
+
       // Speak the response back to the caller
       await call.speak({
         payload: response,
@@ -76,6 +84,8 @@ const inboundCallController = async (req, res) => {
         language: "en-US",
       });
       break;
+    case "call_transcription":
+      console.log("transcription");
     case "call_hangup":
       handleInboundHangup(call, event);
       break;
@@ -90,11 +100,11 @@ const inboundCallController = async (req, res) => {
 async function generateResponse(userInput) {
   const prompt = `User: ${userInput}\nBot:`;
   const completions = await openai.completions.create({
-    engine: 'text-davinci-002',
+    engine: "text-davinci-002",
     prompt,
     max_tokens: 50,
     n: 1,
-    stop: '\n',
+    stop: "\n",
   });
   return completions.choices[0].text.trim();
 }
@@ -106,4 +116,3 @@ router.route("/inbound").post(inboundCallController);
 router.route("/test").get((req, res) => {
   res.send("Test");
 });
-
