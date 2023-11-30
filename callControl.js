@@ -97,15 +97,15 @@ const inboundCallController = async (req, res) => {
       // Speak the response back to the caller
       if (index % 2 === 1) {
         const name = await getName(event.payload.transcription_data.transcript ? event.payload.transcription_data.transcript : "");
-        console.log(name, event.payload.transcription_data.transcript);
+        console.log("Name----------------", name, event.payload.transcription_data.transcript);
         await call.speak({
-          payload: bot_answers[index].replaceAll("#NAME", name),
+          payload: bot_answers[index % 2].replaceAll("#NAME", name),
           voice: "female",
           language: "en-US",
         });
       } else {
         await call.speak({
-          payload: bot_answers[index],
+          payload: bot_answers[index % 2],
           voice: "female",
           language: "en-US",
         });
@@ -114,7 +114,7 @@ const inboundCallController = async (req, res) => {
       index++;
       break;
     case "call_hangup":
-      handleInboundHangup(call, event);
+      // handleInboundHangup(call, event);
       break;
     default:
       console.log(
