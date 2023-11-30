@@ -54,7 +54,7 @@ const bot_answers = [
   "Thank you, #NAME. Please allow me a few moments to get someone who can assist you, please hold.",
 ];
 
-const index = 0;
+let index = 0;
 
 const inboundCallController = async (req, res) => {
   console.log("START!");
