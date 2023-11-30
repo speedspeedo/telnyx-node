@@ -53,7 +53,7 @@ const handleInboundHangup = (call, event) => {
 const inboundCallController = async (req, res) => {
   console.log("START!");
   res.sendStatus(200); // Play nice and respond to webhook
-  const event = req.body.data;
+  const event = req.body;
   console.log(req.body);
   const callIds = {
     call_control_id: event.payload.call_control_id,
