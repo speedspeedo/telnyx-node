@@ -57,74 +57,86 @@ const bot_answers = [
 let index = 0;
 
 const inboundCallController = async (req, res) => {
-  console.log("START!");
-  res.sendStatus(200); // Send HTTP 200 OK to Telnyx immediately
-  const event = req.body;
-  console.log(event.event_type);
-  console.log("_______________________________________________");
-  console.log(req.body);
-  const callIds = {
-    call_control_id: event.payload.call_control_id,
-    call_session_id: event.payload.call_session_id,
-    call_leg_id: event.payload.call_leg_id,
-  };
-  const call = new telnyx.Call(callIds);
-  switch (event.event_type) {
-    case "call_initiated":
-      await call.answer();
-      break;
-    case "call_answered":
-      // Generate the bot's response using call.speak
-      await call.speak({
-        payload:
-          "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
-        voice: "female",
-        language: "en-US",
-      });
-
-      // Step : Begin transcription
-      await call.transcription_start({
-        language: "en",
-        transcriptionEngine: "B",
-        transcriptionTracks: "inbound",
-      });
-      // const userInput = await call.transcription();
-      // const response = await generateResponse(userInput);
-
-      break;
-    case "transcription":
-      console.log("****************************");
-      // Speak the response back to the caller
-      if (index % 2 === 1) {
-        const name = await getName(event.payload.transcription_data.transcript ? event.payload.transcription_data.transcript : "");
-        console.log("Name----------------", name, event.payload.transcription_data.transcript);
+  try {
+    console.log("START!");
+    res.sendStatus(200); // Send HTTP 200 OK to Telnyx immediately
+    const event = req.body;
+    console.log(event.event_type);
+    console.log("_______________________________________________");
+    console.log(req.body);
+    const callIds = {
+      call_control_id: event.payload.call_control_id,
+      call_session_id: event.payload.call_session_id,
+      call_leg_id: event.payload.call_leg_id,
+    };
+    const call = new telnyx.Call(callIds);
+    switch (event.event_type) {
+      case "call_initiated":
+        await call.answer();
+        break;
+      case "call_answered":
+        // Generate the bot's response using call.speak
         await call.speak({
-          payload: bot_answers[index % 2].replaceAll("#NAME", name),
+          payload:
+            "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
           voice: "female",
           language: "en-US",
         });
-      } else {
-        await call.speak({
-          payload: bot_answers[index % 2],
-          voice: "female",
-          language: "en-US",
+
+        // Step : Begin transcription
+        await call.transcription_start({
+          language: "en",
+          transcriptionEngine: "B",
+          transcriptionTracks: "inbound",
         });
-      }
-      
-      index++;
-      break;
-    case "call_hangup":
-      // handleInboundHangup(call, event);
-      break;
-    default:
-      console.log(
-        `Received Call-Control event: ${event.event_type} DLR with call_session_id: ${call.call_session_id}`
-      );
+        // const userInput = await call.transcription();
+        // const response = await generateResponse(userInput);
+
+        break;
+      case "transcription":
+        console.log("****************************");
+        // Speak the response back to the caller
+        if (index % 2 === 1) {
+          const name = await getName(
+            event.payload.transcription_data.transcript
+              ? event.payload.transcription_data.transcript
+              : ""
+          );
+          console.log(
+            "Name----------------",
+            name,
+            event.payload.transcription_data.transcript
+          );
+          await call.speak({
+            payload: bot_answers[index % 2].replaceAll("#NAME", name),
+            voice: "female",
+            language: "en-US",
+          });
+        } else {
+          await call.speak({
+            payload: bot_answers[index % 2],
+            voice: "female",
+            language: "en-US",
+          });
+        }
+
+        index++;
+        break;
+      case "call_hangup":
+        // handleInboundHangup(call, event);
+        break;
+      default:
+        console.log(
+          `Received Call-Control event: ${event.event_type} DLR with call_session_id: ${call.call_session_id}`
+        );
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
 // Function to generate the bot's response using OpenAI
-async function generateResponse(userInput) {
+async function getName(userInput) {
   const completions = await openai.completions.create({
     model: "text-davinci-003",
     prompt: `Tell me the user's name with one word from the following user's response : ${userInput}`,
@@ -133,14 +145,13 @@ async function generateResponse(userInput) {
   let inputString = completions.choices[0].text;
 
   // Split the string by newline and filter out empty strings
-  let wordsAfterNewline = inputString.split('\n').filter(Boolean);
+  let wordsAfterNewline = inputString.split("\n").filter(Boolean);
 
   // Get the last word after the last newline
   let lastName = wordsAfterNewline.pop();
 
   return lastName;
 }
-
 
 router.route("/outbound").post(outboundCallController);
 
