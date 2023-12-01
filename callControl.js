@@ -112,6 +112,8 @@ const inboundCallController = async (req, res) => {
           });
           index ++;
 
+          call.playback_start({ audio_url: './waiting_music.wav' });
+
           await sleepFunction(7000);
 
           // Transfter after 7 secs
