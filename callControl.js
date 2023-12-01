@@ -104,10 +104,7 @@ const inboundCallController = async (req, res) => {
             webhook_url,
           });
           console.log("Call Transfered!");
-        }
-
-        // Speak the response back to the caller
-        if (index % 2 === 1) {
+        } else if (index % 2 === 1) {
           const name = await getName(
             event.payload.transcription_data.transcript
               ? event.payload.transcription_data.transcript
