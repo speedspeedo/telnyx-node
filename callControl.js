@@ -76,57 +76,63 @@ const inboundCallController = async (req, res) => {
         await call.answer();
         break;
       case "call_answered":
-        const webhook_url = (new URL('/call-control/outbound', `${req.protocol}://${req.hostname}`)).href;
-        await call.transfer({
-          to: '+19783840927',
-          webhook_url
-        });
-        console.log("Call Transfered!");
         // Generate the bot's response using call.speak
-        // await call.speak({
-        //   payload:
-        //     "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
-        //   voice: "female",
-        //   language: "en-US",
-        // });
+        await call.speak({
+          payload:
+            "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
+          voice: "female",
+          language: "en-US",
+        });
 
         // Step : Begin transcription
-        // await call.transcription_start({
-        //   language: "en",
-        //   transcriptionEngine: "B",
-        //   transcriptionTracks: "inbound",
-        // });
+        await call.transcription_start({
+          language: "en",
+          transcriptionEngine: "B",
+          transcriptionTracks: "inbound",
+        });
 
         break;
-      // case "transcription":
-      //   console.log("****************************");
-      //   // Speak the response back to the caller
-      //   if (index % 2 === 1) {
-      //     const name = await getName(
-      //       event.payload.transcription_data.transcript
-      //         ? event.payload.transcription_data.transcript
-      //         : ""
-      //     );
-      //     console.log(
-      //       "Name----------------",
-      //       name,
-      //       event.payload.transcription_data.transcript
-      //     );
-      //     await call.speak({
-      //       payload: bot_answers[index % 2].replaceAll("#NAME", name),
-      //       voice: "female",
-      //       language: "en-US",
-      //     });
-      //   } else {
-      //     await call.speak({
-      //       payload: bot_answers[index % 2],
-      //       voice: "female",
-      //       language: "en-US",
-      //     });
-      //   }
+      case "transcription":
+        console.log("****************************");
+        if (index == 2) {
+          const webhook_url = new URL(
+            "/call-control/outbound",
+            `${req.protocol}://${req.hostname}`
+          ).href;
+          await call.transfer({
+            to: "+13522344952",
+            webhook_url,
+          });
+          console.log("Call Transfered!");
+        }
 
-      //   index++;
-      //   break;
+        // Speak the response back to the caller
+        if (index % 2 === 1) {
+          const name = await getName(
+            event.payload.transcription_data.transcript
+              ? event.payload.transcription_data.transcript
+              : ""
+          );
+          console.log(
+            "Name----------------",
+            name,
+            event.payload.transcription_data.transcript
+          );
+          await call.speak({
+            payload: bot_answers[index % 2].replaceAll("#NAME", name),
+            voice: "female",
+            language: "en-US",
+          });
+        } else {
+          await call.speak({
+            payload: bot_answers[index % 2],
+            voice: "female",
+            language: "en-US",
+          });
+        }
+
+        index++;
+        break;
       case "call_hangup":
         // handleInboundHangup(call, event);
         break;
