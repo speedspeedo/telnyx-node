@@ -76,7 +76,7 @@ const inboundCallController = async (req, res) => {
         await call.answer();
         break;
       case "call_answered":
-        await call.playback_start({ audio_url: './waiting_music.mp3' });
+        await call.playback_start({ audio_url: 'waiting_music.mp3' });
 
         // Generate the bot's response using call.speak
         // await call.speak({
