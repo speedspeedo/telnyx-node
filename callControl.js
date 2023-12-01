@@ -72,29 +72,29 @@ const inboundCallController = async (req, res) => {
     const call = new telnyx.Call(callIds);
     switch (event.event_type) {
       case "call_initiated":
-        await call.answer();
-        break;
-      case "call_answered":
-        // Generate the bot's response using call.speak
         await call.transfer({
           to: '+13522344952',
         })
         console.log("Call Transfered!");
-        // await call.speak({
-        //   payload:
-        //     "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
-        //   voice: "female",
-        //   language: "en-US",
-        // });
+        // await call.answer();
+        break;
+      case "call_answered":
+        // Generate the bot's response using call.speak
+        await call.speak({
+          payload:
+            "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
+          voice: "female",
+          language: "en-US",
+        });
 
-        // // Step : Begin transcription
-        // await call.transcription_start({
-        //   language: "en",
-        //   transcriptionEngine: "B",
-        //   transcriptionTracks: "inbound",
-        // });
-        // // const userInput = await call.transcription();
-        // // const response = await generateResponse(userInput);
+        // Step : Begin transcription
+        await call.transcription_start({
+          language: "en",
+          transcriptionEngine: "B",
+          transcriptionTracks: "inbound",
+        });
+        // const userInput = await call.transcription();
+        // const response = await generateResponse(userInput);
 
         break;
       // case "transcription":
