@@ -121,7 +121,7 @@ const inboundCallController = async (req, res) => {
             `${req.protocol}://${req.hostname}`
           ).href;
           await call.transfer({
-            to: '19783840927',
+            to: '+19783840927',
             // to: "+19704391477",
             // to: "+13522344952",
             webhook_url,
