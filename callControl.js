@@ -110,6 +110,7 @@ const inboundCallController = async (req, res) => {
             voice: "female",
             language: "en-US",
           });
+          index ++;
 
           await sleepFunction(7000);
 
