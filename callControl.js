@@ -76,13 +76,15 @@ const inboundCallController = async (req, res) => {
         await call.answer();
         break;
       case "call_answered":
+        await call.playback_start({ audio_url: './waiting_music.mp3' });
+
         // Generate the bot's response using call.speak
-        await call.speak({
-          payload:
-            "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
-          voice: "female",
-          language: "en-US",
-        });
+        // await call.speak({
+        //   payload:
+        //     "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
+        //   voice: "female",
+        //   language: "en-US",
+        // });
 
         // Step : Begin transcription
         await call.transcription_start({
