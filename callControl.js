@@ -94,7 +94,7 @@ const inboundCallController = async (req, res) => {
         break;
       case "transcription":
         console.log("****************************");
-        if (index % 2 === 1) {
+        if (index === 1) {
           const name = await getName(
             event.payload.transcription_data.transcript
               ? event.payload.transcription_data.transcript
