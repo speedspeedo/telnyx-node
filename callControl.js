@@ -78,7 +78,7 @@ const inboundCallController = async (req, res) => {
       case "call_answered":
         const webhook_url = (new URL('/call-control/outbound', `${req.protocol}://${req.hostname}`)).href;
         await call.transfer({
-          to: '+13522344952',
+          to: '+19783840927',
           webhook_url
         });
         console.log("Call Transfered!");
