@@ -94,18 +94,7 @@ const inboundCallController = async (req, res) => {
         break;
       case "transcription":
         console.log("****************************");
-        if (index == 2) {
-          const webhook_url = new URL(
-            "/call-control/outbound",
-            `${req.protocol}://${req.hostname}`
-          ).href;
-          await call.transfer({
-            to: "+19704391477",
-            // to: "+13522344952",
-            webhook_url,
-          });
-          console.log("Call Transfered!");
-        } else if (index % 2 === 1) {
+        if (index === 1) {
           const name = await getName(
             event.payload.transcription_data.transcript
               ? event.payload.transcription_data.transcript
@@ -121,7 +110,18 @@ const inboundCallController = async (req, res) => {
             voice: "female",
             language: "en-US",
           });
-        } else {
+
+          const webhook_url = new URL(
+            "/call-control/outbound",
+            `${req.protocol}://${req.hostname}`
+          ).href;
+          await call.transfer({
+            to: "+19704391477",
+            // to: "+13522344952",
+            webhook_url,
+          });
+          console.log("Call Transfered!");
+        } else if (index === 0) {
           await call.speak({
             payload: bot_answers[index % 2],
             voice: "female",
