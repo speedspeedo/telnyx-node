@@ -94,7 +94,7 @@ const inboundCallController = async (req, res) => {
         break;
       case "transcription":
         console.log("****************************");
-        if (index === 1) {
+        if (index % 2 === 1) {
           const name = await getName(
             event.payload.transcription_data.transcript
               ? event.payload.transcription_data.transcript
@@ -111,6 +111,10 @@ const inboundCallController = async (req, res) => {
             language: "en-US",
           });
 
+          await sleepFunction(7000);
+
+          // Transfter after 7 secs
+          console.log("call trasfer after 7 secs");
           const webhook_url = new URL(
             "/call-control/outbound",
             `${req.protocol}://${req.hostname}`
@@ -121,7 +125,7 @@ const inboundCallController = async (req, res) => {
             webhook_url,
           });
           console.log("Call Transfered!");
-        } else if (index === 0) {
+        } else if (index == 0) {
           await call.speak({
             payload: bot_answers[index % 2],
             voice: "female",
@@ -162,6 +166,10 @@ async function getName(userInput) {
   return lastName;
 }
 
+// Function to delay some time
+const sleepFunction = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
 router.route("/outbound").post(outboundCallController);
 
 router.route("/inbound").post(inboundCallController);
