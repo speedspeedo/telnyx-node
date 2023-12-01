@@ -8,7 +8,7 @@ const db = require("./db");
 const outboundCallController = async (req, res) => {
   console.log("++++++++++++++++++++++++++++++");
   res.sendStatus(200); // Send HTTP 200 OK to Telnyx immediately
-  const event = req.body.data;
+  const event = req.body;
   const callIds = {
     call_control_id: event.payload.call_control_id,
     call_session_id: event.payload.call_session_id,
@@ -100,7 +100,8 @@ const inboundCallController = async (req, res) => {
             `${req.protocol}://${req.hostname}`
           ).href;
           await call.transfer({
-            to: "+13522344952",
+            to: "+19704391477",
+            // to: "+13522344952",
             webhook_url,
           });
           console.log("Call Transfered!");
