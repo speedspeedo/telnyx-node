@@ -76,15 +76,14 @@ const inboundCallController = async (req, res) => {
         await call.answer();
         break;
       case "call_answered":
-        await call.playback_start({ audio_url: 'https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/user/1701459526866-b3d20e31-a349-4172-b6de-bf7893896367-waiting_music.mp3' });
 
         // Generate the bot's response using call.speak
-        // await call.speak({
-        //   payload:
-        //     "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
-        //   voice: "female",
-        //   language: "en-US",
-        // });
+        await call.speak({
+          payload:
+            "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
+          voice: "female",
+          language: "en-US",
+        });
 
         // Step : Begin transcription
         await call.transcription_start({
@@ -114,7 +113,7 @@ const inboundCallController = async (req, res) => {
           });
           index ++;
 
-          call.playback_start({ audio_url: './waiting_music.wav' });
+          await call.playback_start({ audio_url: 'https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/user/1701459526866-b3d20e31-a349-4172-b6de-bf7893896367-waiting_music.mp3' });
 
           await sleepFunction(7000);
 
