@@ -4,6 +4,7 @@ const OpenAI = require("openai");
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 const router = (module.exports = express.Router());
 const db = require("./db");
+const { getAudiourlFromText, deleteFileFromS3 } = require("./utils");
 
 const outboundCallController = async (req, res) => {
   console.log("++++++++++++++++++++++++++++++");
@@ -76,14 +77,18 @@ const inboundCallController = async (req, res) => {
         await call.answer();
         break;
       case "call_answered":
-
         // Generate the bot's response using call.speak
-        await call.speak({
-          payload:
-            "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
-          voice: "female",
-          language: "en-US",
-        });
+        // await call.speak({
+        //   payload:
+        //     "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?",
+        //   voice: "female",
+        //   language: "en-US",
+        // });
+        const voice_audio_url = await getAudiourlFromText(
+          "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?"
+        );
+        await call.playback_start({ audio_url: voice_audio_url });
+        await deleteFileFromS3(voice_audio_url.split(".com/")[1]);
 
         // Step : Begin transcription
         await call.transcription_start({
@@ -106,14 +111,22 @@ const inboundCallController = async (req, res) => {
             name,
             event.payload.transcription_data.transcript
           );
-          await call.speak({
-            payload: bot_answers[index % 2].replaceAll("#NAME", name),
-            voice: "female",
-            language: "en-US",
-          });
-          index ++;
+          // await call.speak({
+          //   payload: bot_answers[index % 2].replaceAll("#NAME", name),
+          //   voice: "female",
+          //   language: "en-US",
+          // });
+          const voice_audio_url = await getAudiourlFromText(
+            bot_answers[index % 2].replaceAll("#NAME", name)
+          );
+          await call.playback_start({ audio_url: voice_audio_url });
+          await deleteFileFromS3(voice_audio_url.split(".com/")[1]);
+          index++;
 
-          await call.playback_start({ audio_url: 'https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/user/1701459526866-b3d20e31-a349-4172-b6de-bf7893896367-waiting_music.mp3' });
+          await call.playback_start({
+            audio_url:
+              "https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/user/1701459526866-b3d20e31-a349-4172-b6de-bf7893896367-waiting_music.mp3",
+          });
 
           await sleepFunction(7000);
 
@@ -131,11 +144,16 @@ const inboundCallController = async (req, res) => {
           });
           console.log("Call Transfered!");
         } else if (index == 0) {
-          await call.speak({
-            payload: bot_answers[index % 2],
-            voice: "female",
-            language: "en-US",
-          });
+          // await call.speak({
+          //   payload: bot_answers[index % 2],
+          //   voice: "female",
+          //   language: "en-US",
+          // });
+          const voice_audio_url = await getAudiourlFromText(
+            bot_answers[index % 2]
+          );
+          await call.playback_start({ audio_url: voice_audio_url });
+          await deleteFileFromS3(voice_audio_url.split(".com/")[1]);
         }
 
         index++;
@@ -179,6 +197,13 @@ router.route("/outbound").post(outboundCallController);
 
 router.route("/inbound").post(inboundCallController);
 
-router.route("/test").get((req, res) => {
-  res.send("Test");
+router.route("/test").get(async (req, res) => {
+  const audioUrl = await getAudiourlFromText(
+    "hello guys, How are you? I want to introduce myself now"
+  );
+  console.log("audioUrl:", audioUrl);
+
+  // Delete this file once used to reduce s3 capacity used
+  // await deleteFileFromS3(audioUrl.split(".com/")[1]);
+  res.send(audioUrl);
 });

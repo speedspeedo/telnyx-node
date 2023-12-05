@@ -8,8 +8,8 @@ async function createCall() {
   try {
     const { data: call } = await telnyx.calls.create({
       connection_id: `${process.env.TELNYX_CONNECTION_ID}`,
-      from: '+13522344952',
-      to: process.env.TELNYX_Number,
+      to: '+12069059357',
+      from: process.env.TELNYX_Number,
     });
 
     await call.answer();
@@ -24,6 +24,8 @@ async function createCall() {
     console.error("Error creating a call:", error);
   }
 }
+
+createCall();
 
 async function generateResponse(userInput) {
   const completions = await openai.completions.create({
@@ -44,4 +46,4 @@ async function generateResponse(userInput) {
 
 
 // Call the async function
-generateResponse(" jake");
+// generateResponse(" jake");
