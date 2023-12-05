@@ -72,6 +72,7 @@ const inboundCallController = async (req, res) => {
       call_leg_id: event.payload.call_leg_id,
     };
     const call = new telnyx.Call(callIds);
+    let voice_audio_url;
     switch (event.event_type) {
       case "call_initiated":
         await call.answer();
@@ -84,11 +85,10 @@ const inboundCallController = async (req, res) => {
         //   voice: "female",
         //   language: "en-US",
         // });
-        const voice_audio_url = await getAudiourlFromText(
+        voice_audio_url = await getAudiourlFromText(
           "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?"
         );
         await call.playback_start({ audio_url: voice_audio_url });
-        await deleteFileFromS3(voice_audio_url.split(".com/")[1]);
 
         // Step : Begin transcription
         await call.transcription_start({
@@ -116,11 +116,10 @@ const inboundCallController = async (req, res) => {
           //   voice: "female",
           //   language: "en-US",
           // });
-          const voice_audio_url = await getAudiourlFromText(
+          voice_audio_url = await getAudiourlFromText(
             bot_answers[index % 2].replaceAll("#NAME", name)
           );
           await call.playback_start({ audio_url: voice_audio_url });
-          await deleteFileFromS3(voice_audio_url.split(".com/")[1]);
           index++;
 
           await call.playback_start({
@@ -149,11 +148,11 @@ const inboundCallController = async (req, res) => {
           //   voice: "female",
           //   language: "en-US",
           // });
-          const voice_audio_url = await getAudiourlFromText(
+          voice_audio_url = await getAudiourlFromText(
             bot_answers[index % 2]
           );
           await call.playback_start({ audio_url: voice_audio_url });
-          await deleteFileFromS3(voice_audio_url.split(".com/")[1]);
+          
         }
 
         index++;
@@ -161,6 +160,8 @@ const inboundCallController = async (req, res) => {
       case "call_hangup":
         // handleInboundHangup(call, event);
         break;
+      case "playback_eneded":
+        await deleteFileFromS3(voice_audio_url.split(".com/")[1]);
       default:
         console.log(
           `Received Call-Control event: ${event.event_type} DLR with call_session_id: ${call.call_session_id}`
