@@ -25,7 +25,7 @@ async function createCall() {
   }
 }
 
-createCall();
+// createCall();
 
 async function generateResponse(userInput) {
   const completions = await openai.completions.create({
@@ -46,4 +46,4 @@ async function generateResponse(userInput) {
 
 
 // Call the async function
-// generateResponse(" jake");
+generateResponse(" Mike");
