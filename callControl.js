@@ -145,8 +145,8 @@ const inboundCallController = async (req, res) => {
           await call.transfer({
             // to: '+19783840927',
             // to: "+19704391477",
-            // to: "+13522344952",
-            to: "+12069059357",
+            to: "+13522344952",
+            // to: "+12069059357",
             webhook_url,
           });
           console.log("Call Transfered!");
