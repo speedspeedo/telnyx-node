@@ -70,7 +70,7 @@ const inboundCallController = async (req, res) => {
     console.log("START!");
     res.sendStatus(200); // Send HTTP 200 OK to Telnyx immediately
     const event = req.body;
-    console.log(event.event_type);
+    console.log(event.event_type, index);
     console.log("_______________________________________________");
     console.log(req.body);
     const callIds = {
@@ -127,8 +127,6 @@ const inboundCallController = async (req, res) => {
           //   bot_answers[index % 2].replaceAll("#NAME", name)
           // );
           await call.playback_start({ audio_url: bot_answer_urls[index % 3] });
-          voice_audio_url = await getAudiourlFromText(name);
-          await call.playback_start({ audio_url: voice_audio_url });
           index++;
 
           await call.playback_start({
