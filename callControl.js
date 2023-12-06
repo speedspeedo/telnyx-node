@@ -56,7 +56,14 @@ const bot_answers = [
   "Thank you, #NAME. Please allow me a few moments to get someone who can assist you, please hold.",
 ];
 
-let index = 0;
+const bot_answer_urls = [
+  "https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/telnyx/1701874685661-17e8545b-b544-4a97-a1ec-7ecf9eca8800.mp3",
+  "https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/telnyx/1701874911303-06d0fbcf-43ef-4e60-b2d4-c5aa216fdc60.mp3",
+  "https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/telnyx/1701875146835-652d6e74-1b8d-4797-899f-c6ba5114d828.mp3",
+];
+
+let index = 1;
+let voice_audio_url;
 
 const inboundCallController = async (req, res) => {
   try {
@@ -72,7 +79,6 @@ const inboundCallController = async (req, res) => {
       call_leg_id: event.payload.call_leg_id,
     };
     const call = new telnyx.Call(callIds);
-    let voice_audio_url;
     switch (event.event_type) {
       case "call_initiated":
         await call.answer();
@@ -85,10 +91,11 @@ const inboundCallController = async (req, res) => {
         //   voice: "female",
         //   language: "en-US",
         // });
-        voice_audio_url = await getAudiourlFromText(
-          "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?"
-        );
-        await call.playback_start({ audio_url: voice_audio_url });
+        // voice_audio_url = await getAudiourlFromText(
+        //   "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?"
+        // );
+
+        await call.playback_start({ audio_url: bot_answer_urls[0] });
 
         // Step : Begin transcription
         await call.transcription_start({
@@ -100,7 +107,7 @@ const inboundCallController = async (req, res) => {
         break;
       case "transcription":
         console.log("****************************");
-        if (index === 1) {
+        if (index === 2) {
           const name = await getName(
             event.payload.transcription_data.transcript
               ? event.payload.transcription_data.transcript
@@ -116,9 +123,11 @@ const inboundCallController = async (req, res) => {
           //   voice: "female",
           //   language: "en-US",
           // });
-          voice_audio_url = await getAudiourlFromText(
-            bot_answers[index % 2].replaceAll("#NAME", name)
-          );
+          // voice_audio_url = await getAudiourlFromText(
+          //   bot_answers[index % 2].replaceAll("#NAME", name)
+          // );
+          await call.playback_start({ audio_url: bot_answer_urls[index % 3] });
+          voice_audio_url = await getAudiourlFromText(name);
           await call.playback_start({ audio_url: voice_audio_url });
           index++;
 
@@ -139,21 +148,18 @@ const inboundCallController = async (req, res) => {
             // to: '+19783840927',
             // to: "+19704391477",
             // to: "+13522344952",
-            to: '+12069059357',
+            to: "+12069059357",
             webhook_url,
           });
           console.log("Call Transfered!");
-        } else if (index == 0) {
+        } else if (index === 1) {
           // await call.speak({
           //   payload: bot_answers[index % 2],
           //   voice: "female",
           //   language: "en-US",
           // });
-          voice_audio_url = await getAudiourlFromText(
-            bot_answers[index % 2]
-          );
-          await call.playback_start({ audio_url: voice_audio_url });
-          
+          // voice_audio_url = await getAudiourlFromText(bot_answers[index % 2]);
+          await call.playback_start({ audio_url: bot_answer_urls[index % 3] });
         }
 
         index++;
@@ -163,6 +169,7 @@ const inboundCallController = async (req, res) => {
         break;
       case "playback_eneded":
         await deleteFileFromS3(voice_audio_url.split(".com/")[1]);
+        console.log("Deleted!");
       default:
         console.log(
           `Received Call-Control event: ${event.event_type} DLR with call_session_id: ${call.call_session_id}`
@@ -201,7 +208,7 @@ router.route("/inbound").post(inboundCallController);
 
 router.route("/test").get(async (req, res) => {
   const audioUrl = await getAudiourlFromText(
-    "hello guys, How are you? I want to introduce myself now"
+    "Thank you. Please allow me a few moments to get someone who can assist you, please hold."
   );
   console.log("audioUrl:", audioUrl);
 
@@ -209,3 +216,12 @@ router.route("/test").get(async (req, res) => {
   // await deleteFileFromS3(audioUrl.split(".com/")[1]);
   res.send(audioUrl);
 });
+
+// "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?"
+// https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/telnyx/1701874685661-17e8545b-b544-4a97-a1ec-7ecf9eca8800.mp3
+
+// "Okay, I can certainly get someone to help you with that. May I have your name, please?"
+// https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/telnyx/1701874911303-06d0fbcf-43ef-4e60-b2d4-c5aa216fdc60.mp3
+
+// "Thank you. Please allow me a few moments to get someone who can assist you, please hold."
+// https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/telnyx/1701875146835-652d6e74-1b8d-4797-899f-c6ba5114d828.mp3
