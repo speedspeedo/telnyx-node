@@ -127,7 +127,6 @@ const inboundCallController = async (req, res) => {
           // );
           await call.playback_start({ audio_url: bot_answer_urls[index % 2] });
           index++;
-          await sleepFunction(5000);
           console.log("Music is Playing!!!!!");
           await call.playback_start({
             audio_url:
