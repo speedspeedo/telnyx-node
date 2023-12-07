@@ -134,7 +134,7 @@ const inboundCallController = async (req, res) => {
               "https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/user/1701459526866-b3d20e31-a349-4172-b6de-bf7893896367-waiting_music.mp3",
           });
 
-          
+          await sleepFunction(7000);
 
           // Transfter after 7 secs
           console.log("call trasfer after 7 secs");
