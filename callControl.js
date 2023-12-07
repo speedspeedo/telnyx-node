@@ -57,12 +57,11 @@ const bot_answers = [
 ];
 
 const bot_answer_urls = [
-  "https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/telnyx/1701874685661-17e8545b-b544-4a97-a1ec-7ecf9eca8800.mp3",
   "https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/telnyx/1701874911303-06d0fbcf-43ef-4e60-b2d4-c5aa216fdc60.mp3",
   "https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/telnyx/1701875146835-652d6e74-1b8d-4797-899f-c6ba5114d828.mp3",
 ];
 
-let index = 1;
+let index = 0;
 let voice_audio_url;
 
 const inboundCallController = async (req, res) => {
@@ -95,7 +94,7 @@ const inboundCallController = async (req, res) => {
         //   "Good morning! Thank you for Martinez Cleaning Services. My name is Jessica. How can I help you today?"
         // );
 
-        await call.playback_start({ audio_url: bot_answer_urls[0] });
+        await call.playback_start({ audio_url: "https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/telnyx/1701874685661-17e8545b-b544-4a97-a1ec-7ecf9eca8800.mp3" });
 
         // Step : Begin transcription
         await call.transcription_start({
@@ -107,7 +106,7 @@ const inboundCallController = async (req, res) => {
         break;
       case "transcription":
         console.log("****************************");
-        if (index === 2) {
+        if (index === 1) {
           const name = await getName(
             event.payload.transcription_data.transcript
               ? event.payload.transcription_data.transcript
@@ -126,8 +125,9 @@ const inboundCallController = async (req, res) => {
           // voice_audio_url = await getAudiourlFromText(
           //   bot_answers[index % 2].replaceAll("#NAME", name)
           // );
-          await call.playback_start({ audio_url: bot_answer_urls[index % 3] });
+          await call.playback_start({ audio_url: bot_answer_urls[index % 2] });
           index++;
+          await sleepFunction(5000);
           console.log("Music is Playing!!!!!");
           await call.playback_start({
             audio_url:
@@ -150,14 +150,14 @@ const inboundCallController = async (req, res) => {
             webhook_url,
           });
           console.log("Call Transfered!");
-        } else if (index === 1) {
+        } else if (index === 0) {
           // await call.speak({
           //   payload: bot_answers[index % 2],
           //   voice: "female",
           //   language: "en-US",
           // });
           // voice_audio_url = await getAudiourlFromText(bot_answers[index % 2]);
-          await call.playback_start({ audio_url: bot_answer_urls[index % 3] });
+          await call.playback_start({ audio_url: bot_answer_urls[index % 2] });
         }
 
         index++;
