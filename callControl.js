@@ -128,7 +128,24 @@ const inboundCallController = async (req, res) => {
           // );
           await call.playback_start({ audio_url: bot_answer_urls[index % 3] });
           index++;
+        } else if (index === 1) {
+          // await call.speak({
+          //   payload: bot_answers[index % 2],
+          //   voice: "female",
+          //   language: "en-US",
+          // });
+          // voice_audio_url = await getAudiourlFromText(bot_answers[index % 2]);
+          await call.playback_start({ audio_url: bot_answer_urls[index % 3] });
+        }
 
+        index++;
+        break;
+      case "call_hangup":
+        // handleInboundHangup(call, event);
+        break;
+      case "playback_eneded":
+        await deleteFileFromS3(voice_audio_url.split(".com/")[1]);
+        if (index === 3) {
           await call.playback_start({
             audio_url:
               "https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/user/1701459526866-b3d20e31-a349-4172-b6de-bf7893896367-waiting_music.mp3",
@@ -150,23 +167,7 @@ const inboundCallController = async (req, res) => {
             webhook_url,
           });
           console.log("Call Transfered!");
-        } else if (index === 1) {
-          // await call.speak({
-          //   payload: bot_answers[index % 2],
-          //   voice: "female",
-          //   language: "en-US",
-          // });
-          // voice_audio_url = await getAudiourlFromText(bot_answers[index % 2]);
-          await call.playback_start({ audio_url: bot_answer_urls[index % 3] });
         }
-
-        index++;
-        break;
-      case "call_hangup":
-        // handleInboundHangup(call, event);
-        break;
-      case "playback_eneded":
-        await deleteFileFromS3(voice_audio_url.split(".com/")[1]);
         console.log("Deleted!");
       default:
         console.log(
