@@ -127,7 +127,6 @@ const inboundCallController = async (req, res) => {
           //   bot_answers[index % 2].replaceAll("#NAME", name)
           // );
           await call.playback_start({ audio_url: bot_answer_urls[index % 3] });
-          index++;
         } else if (index === 1) {
           // await call.speak({
           //   payload: bot_answers[index % 2],
