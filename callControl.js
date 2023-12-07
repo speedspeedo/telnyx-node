@@ -128,12 +128,13 @@ const inboundCallController = async (req, res) => {
           await call.playback_start({ audio_url: bot_answer_urls[index % 2] });
           index++;
           console.log("Music is Playing!!!!!");
+          await sleepFunction(6000);
           await call.playback_start({
             audio_url:
               "https://snaprise-storage.sgp1.digitaloceanspaces.com/project/files/user/1701459526866-b3d20e31-a349-4172-b6de-bf7893896367-waiting_music.mp3",
           });
 
-          await sleepFunction(7000);
+          
 
           // Transfter after 7 secs
           console.log("call trasfer after 7 secs");
